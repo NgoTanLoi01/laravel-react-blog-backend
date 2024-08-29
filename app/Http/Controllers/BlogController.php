@@ -13,13 +13,15 @@ class BlogController extends Controller
 {
     public function index()
     {
-        return Blog::all();
+        $blogs = Blog::orderBy('created_at', 'DESC')->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $blogs
+        ]);
     }
 
-    public function show()
-    {
-        return Blog::all();
-    }
+    public function show() {}
 
     public function store(Request $request)
     {
@@ -56,7 +58,7 @@ class BlogController extends Controller
 
             $sourcePath = public_path('uploads/temp/' . $tempImage->name);
             $destPath = public_path('uploads/blogs/' . $imageName);
-            
+
             File::copy($sourcePath, $destPath);
         }
 
@@ -67,13 +69,7 @@ class BlogController extends Controller
         ]);
     }
 
-    public function update()
-    {
-        return Blog::all();
-    }
+    public function update() {}
 
-    public function destroy()
-    {
-        return Blog::all();
-    }
+    public function destroy() {}
 }
