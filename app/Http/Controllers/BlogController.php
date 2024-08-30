@@ -21,7 +21,25 @@ class BlogController extends Controller
         ]);
     }
 
-    public function show() {}
+    public function show($id)
+    {
+        $blog = Blog::find($id);
+
+        if ($blog == null) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Blog not found'
+            ]);
+        }
+
+        $blog['date'] = \Carbon\Carbon::parse($blog->created_at)->format('d M Y');
+
+
+        return response()->json([
+            'status' => true,
+            'data' => $blog
+        ]);
+    }
 
     public function store(Request $request)
     {
