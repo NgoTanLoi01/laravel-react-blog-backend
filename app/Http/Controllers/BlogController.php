@@ -11,9 +11,14 @@ use Illuminate\Support\Facades\Validator;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $blogs = Blog::orderBy('created_at', 'DESC')->get();
+        $blogs = Blog::orderBy('created_at', 'DESC');
+        if (!empty($request->keyword)) {
+            $blogs = $blogs->where('title', 'LIKE', '%' . $request->keyword . '%');
+        }
+
+        $blogs = $blogs->get();
 
         return response()->json([
             'status' => true,
@@ -91,7 +96,7 @@ class BlogController extends Controller
     {
         $blog = Blog::find($id);
 
-        if($blog == null) {
+        if ($blog == null) {
             return response()->json([
                 'status' => true,
                 'message' => 'Blog not found.',
@@ -146,5 +151,26 @@ class BlogController extends Controller
         ]);
     }
 
-    public function destroy() {}
+    public function destroy($id)
+    {
+        $blog = Blog::find($id);
+
+        if ($blog == null) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Blog not found.'
+            ]);
+        }
+
+        //Delete blog image first
+        File::delete(public_path('uploads/blogs/' . $blog->image));
+
+        //Delete blog from DB
+        $blog->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Blog deleted successfully.'
+        ]);
+    }
 }
